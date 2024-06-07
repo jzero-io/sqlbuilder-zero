@@ -1,0 +1,40 @@
+version: '3'
+services:
+  ntls_admin_go_mysql:
+    image: "mysql:8.0"
+    environment:
+      - TZ=Asia/Shanghai
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_ROOT_USER=root
+      - MYSQL_DATABASE=ntls
+    volumes:
+      - ./data/mysql_data:/var/lib/mysql
+    restart: always
+    ports:
+      - "33060:3306"
+
+  ntls_admin_go_dameng8:
+    image: 192.168.138.190/domestic_database/dm8:dm8_20240422_rev215128_x86_rh6_64
+    restart: always
+    container_name: ntls_admin_go_dameng8
+    privileged: true
+    environment:
+      - PAGE_SIZE=16
+      - LD_LIBRARY_PATH=/opt/dmdbms/bin
+      - EXTENT_SIZE=32
+      - BLANK_PAD_MODE=1
+      - LOG_SIZE=1024
+#      - CASE_SENSITIVE=0
+      - UNICODE_FLAG=1
+      - LENGTH_IN_CHAR=1
+      - INSTANCE_NAME=ntls_admin_go_dameng8
+    volumes:
+      - ./data/dm8_data:/opt/dmdbms/data
+    ports:
+      - '30236:5236'
+
+  ntls_admin_go_jaeger:
+    image: jaegertracing/all-in-one:1.6
+    ports:
+      - "14268:14268"
+      - "16686:16686"
