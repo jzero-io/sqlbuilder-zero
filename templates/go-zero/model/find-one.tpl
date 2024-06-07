@@ -5,7 +5,7 @@ func (m *default{{.upperStartCamelObject}}Model) FindOne(ctx context.Context, {{
 	    sb := sqlbuilder.Select({{.lowerStartCamelObject}}Rows).From(m.table)
 	    sb.Where(sb.EQ("{{.originalPrimaryKey}}", {{.lowerStartCamelPrimaryKey}}))
         sql, args := sb.Build()
-		return conn.QueryRowCtx(ctx, v, sql, args)
+		return conn.QueryRowCtx(ctx, v, sql, args...)
 	})
 	switch err {
 	case nil:
@@ -19,7 +19,7 @@ func (m *default{{.upperStartCamelObject}}Model) FindOne(ctx context.Context, {{
 	sb.Limit(1)
 	sql, args := sb.Build()
 	var resp {{.upperStartCamelObject}}
-	err := m.conn.QueryRowCtx(ctx, &resp, query, {{.lowerStartCamelPrimaryKey}})
+	err := m.conn.QueryRowCtx(ctx, &resp, sql, args...)
 	switch err {
 	case nil:
 		return &resp, nil
