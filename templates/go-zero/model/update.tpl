@@ -6,9 +6,21 @@ func (m *default{{.upperStartCamelObject}}Model) Update(ctx context.Context, {{i
 
 {{end}}	{{.keys}}
     _, {{if .containsIndexCache}}err{{else}}err:{{end}}= m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("update %s set %s where {{.originalPrimaryKey}} = {{if .postgreSql}}$1{{else}}?{{end}}", m.table, {{.lowerStartCamelObject}}RowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, {{.expressionValues}})
-	}, {{.keyValues}}){{else}}query := fmt.Sprintf("update %s set %s where {{.originalPrimaryKey}} = {{if .postgreSql}}$1{{else}}?{{end}}", m.table, {{.lowerStartCamelObject}}RowsWithPlaceHolder)
-    _,err:=m.conn.ExecCtx(ctx, query, {{.expressionValues}}){{end}}
+        sb := sqlbuilder.Update(m.table)
+        split := strings.Split({{.lowerStartCamelObject}}RowsExpectAutoSet, ",")
+        for _, s := range split {
+            sb.Set(sb.Assign(s, nil))
+        }
+        sb.Where(sb.EQ("{{.originalPrimaryKey}}", nil))
+        sql, _ := sb.Build()
+		return conn.ExecCtx(ctx, sql, {{.expressionValues}})
+	}, {{.keyValues}}){{else}} sb := sqlbuilder.Update(m.table)
+	split := strings.Split({{.lowerStartCamelObject}}RowsExpectAutoSet, ",")
+	for _, s := range split {
+        sb.Set(sb.Assign(s, nil))
+    }
+    sb.Where(sb.EQ("{{.originalPrimaryKey}}", nil))
+    sql, _ := sb.Build()
+    _,err:=m.conn.ExecCtx(ctx, sql, {{.expressionValues}}){{end}}
 	return err
 }

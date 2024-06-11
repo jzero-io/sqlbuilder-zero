@@ -2,8 +2,11 @@ func (m *default{{.upperStartCamelObject}}Model) FindOneBy{{.upperField}}(ctx co
 	{{if .withCache}}{{.cacheKey}}
 	var resp {{.upperStartCamelObject}}
 	err := m.QueryRowIndexCtx(ctx, &resp, {{.cacheKeyVariable}}, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v any) (i any, e error) {
-		query := fmt.Sprintf("select %s from %s where {{.originalField}} limit 1", {{.lowerStartCamelObject}}Rows, m.table)
-		if err := conn.QueryRowCtx(ctx, &resp, query, {{.lowerStartCamelField}}); err != nil {
+		sb := sqlbuilder.Select({{.lowerStartCamelObject}}Rows).From(m.table)
+		sb.Where(sb.EQ("{{.originalField}}", {{.lowerStartCamelField}}))
+		sb.Limit(1)
+        sql, args := sb.Build()
+		if err := conn.QueryRowCtx(ctx, &resp, sql, args...); err != nil {
 			return nil, err
 		}
 		return resp.{{.upperStartCamelPrimaryKey}}, nil
@@ -17,8 +20,12 @@ func (m *default{{.upperStartCamelObject}}Model) FindOneBy{{.upperField}}(ctx co
 		return nil, err
 	}
 }{{else}}var resp {{.upperStartCamelObject}}
-	query := fmt.Sprintf("select %s from %s where {{.originalField}} limit 1", {{.lowerStartCamelObject}}Rows, m.table )
-	err := m.conn.QueryRowCtx(ctx, &resp, query, {{.lowerStartCamelField}})
+	sb := sqlbuilder.Select({{.lowerStartCamelObject}}Rows).From(m.table)
+    sb.Where(sb.EQ("{{.originalField}}", {{.lowerStartCamelField}}))
+    sb.Limit(1)
+    sql, args := sb.Build()
+    err := m.conn.QueryRowCtx(ctx, &resp, sql, args...)
+
 	switch err {
 	case nil:
 		return &resp, nil
