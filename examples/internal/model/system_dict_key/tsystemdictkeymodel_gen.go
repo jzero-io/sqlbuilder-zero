@@ -124,9 +124,11 @@ func (m *defaultTSystemDictKeyModel) Insert(ctx context.Context, data *TSystemDi
 func (m *defaultTSystemDictKeyModel) Update(ctx context.Context, newData *TSystemDictKey) error {
 	sb := sqlbuilder.Update(m.table)
 	split := strings.Split(tSystemDictKeyRowsExpectAutoSet, ",")
+	var assigns []string
 	for _, s := range split {
-		sb.Set(sb.Assign(s, nil))
+		assigns = append(assigns, sb.Assign(s, nil))
 	}
+	sb.Set(assigns...)
 	sb.Where(sb.EQ("`id`", nil))
 	sql, _ := sb.Build()
 	_, err := m.conn.ExecCtx(ctx, sql, newData.Uuid, newData.CategoryCode, newData.CategoryDesc, newData.Sort, newData.Id)
