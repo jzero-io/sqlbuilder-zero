@@ -8,17 +8,21 @@ func (m *default{{.upperStartCamelObject}}Model) Update(ctx context.Context, {{i
     _, {{if .containsIndexCache}}err{{else}}err:{{end}}= m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
         sb := sqlbuilder.Update(m.table)
         split := strings.Split({{.lowerStartCamelObject}}RowsExpectAutoSet, ",")
+        var assigns []string
         for _, s := range split {
-            sb.Set(sb.Assign(s, nil))
+           assigns = append(assigns, sb.Assign(s, nil))
         }
+        sb.Set(assigns...)
         sb.Where(sb.EQ("{{.originalPrimaryKey}}", nil))
         sql, _ := sb.Build()
 		return conn.ExecCtx(ctx, sql, {{.expressionValues}})
 	}, {{.keyValues}}){{else}} sb := sqlbuilder.Update(m.table)
 	split := strings.Split({{.lowerStartCamelObject}}RowsExpectAutoSet, ",")
-	for _, s := range split {
-        sb.Set(sb.Assign(s, nil))
+	var assigns []string
+    for _, s := range split {
+        assigns = append(assigns, sb.Assign(s, nil))
     }
+    sb.Set(assigns...)
     sb.Where(sb.EQ("{{.originalPrimaryKey}}", nil))
     sql, _ := sb.Build()
     _,err:=m.conn.ExecCtx(ctx, sql, {{.expressionValues}}){{end}}

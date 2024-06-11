@@ -3,7 +3,8 @@ func (m *default{{.upperStartCamelObject}}Model) FindOneBy{{.upperField}}(ctx co
 	var resp {{.upperStartCamelObject}}
 	err := m.QueryRowIndexCtx(ctx, &resp, {{.cacheKeyVariable}}, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v any) (i any, e error) {
 		sb := sqlbuilder.Select({{.lowerStartCamelObject}}Rows).From(m.table)
-		sb.Where(sb.EQ("{{.originalField}}", {{.lowerStartCamelField}}))
+        // patch
+		sb.Where(sb.EQ(strings.Split(strings.TrimSpace("{{.originalField}}"), "=")[0], {{.lowerStartCamelField}}))
 		sb.Limit(1)
         sql, args := sb.Build()
 		if err := conn.QueryRowCtx(ctx, &resp, sql, args...); err != nil {
