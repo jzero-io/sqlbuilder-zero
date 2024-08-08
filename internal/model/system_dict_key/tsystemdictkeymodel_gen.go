@@ -5,10 +5,9 @@ package system_dict_key
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"strings"
 
-	"github.com/huandu/go-sqlbuilder"
-	"github.com/jzero-io/jzero-contrib/condition"
 	"github.com/zeromicro/go-zero/core/stores/builder"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"github.com/zeromicro/go-zero/core/stringx"
@@ -53,20 +52,15 @@ func newTSystemDictKeyModel(conn sqlx.SqlConn) *defaultTSystemDictKeyModel {
 }
 
 func (m *defaultTSystemDictKeyModel) Delete(ctx context.Context, id int64) error {
-	sb := sqlbuilder.DeleteFrom(m.table)
-	sb.Where(sb.EQ("`id`", id))
-	sql, args := sb.Build()
-	_, err := m.conn.ExecCtx(ctx, sql, args...)
+	query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
+	_, err := m.conn.ExecCtx(ctx, query, id)
 	return err
 }
 
 func (m *defaultTSystemDictKeyModel) FindOne(ctx context.Context, id int64) (*TSystemDictKey, error) {
-	sb := sqlbuilder.Select(tSystemDictKeyRows).From(m.table)
-	sb.Where(sb.EQ("`id`", id))
-	sb.Limit(1)
-	sql, args := sb.Build()
+	query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", tSystemDictKeyRows, m.table)
 	var resp TSystemDictKey
-	err := m.conn.QueryRowCtx(ctx, &resp, sql, args...)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, id)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -79,12 +73,8 @@ func (m *defaultTSystemDictKeyModel) FindOne(ctx context.Context, id int64) (*TS
 
 func (m *defaultTSystemDictKeyModel) FindOneByCategoryCode(ctx context.Context, categoryCode string) (*TSystemDictKey, error) {
 	var resp TSystemDictKey
-	sb := sqlbuilder.Select(tSystemDictKeyRows).From(m.table)
-	sb.Where(sb.EQ("`category_code` = ?", categoryCode))
-	sb.Limit(1)
-	sql, args := sb.Build()
-	err := m.conn.QueryRowCtx(ctx, &resp, sql, args...)
-
+	query := fmt.Sprintf("select %s from %s where `category_code` = ? limit 1", tSystemDictKeyRows, m.table)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, categoryCode)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -97,12 +87,8 @@ func (m *defaultTSystemDictKeyModel) FindOneByCategoryCode(ctx context.Context, 
 
 func (m *defaultTSystemDictKeyModel) FindOneByUuid(ctx context.Context, uuid string) (*TSystemDictKey, error) {
 	var resp TSystemDictKey
-	sb := sqlbuilder.Select(tSystemDictKeyRows).From(m.table)
-	sb.Where(sb.EQ("`uuid` = ?", uuid))
-	sb.Limit(1)
-	sql, args := sb.Build()
-	err := m.conn.QueryRowCtx(ctx, &resp, sql, args...)
-
+	query := fmt.Sprintf("select %s from %s where `uuid` = ? limit 1", tSystemDictKeyRows, m.table)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, uuid)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -114,83 +100,17 @@ func (m *defaultTSystemDictKeyModel) FindOneByUuid(ctx context.Context, uuid str
 }
 
 func (m *defaultTSystemDictKeyModel) Insert(ctx context.Context, data *TSystemDictKey) (sql.Result, error) {
-	sql, args := sqlbuilder.NewInsertBuilder().
-		InsertInto(m.table).
-		Cols(tSystemDictKeyRowsExpectAutoSet).
-		Values(data.Uuid, data.CategoryCode, data.CategoryDesc, data.Sort).Build()
-	ret, err := m.conn.ExecCtx(ctx, sql, args...)
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?)", m.table, tSystemDictKeyRowsExpectAutoSet)
+	ret, err := m.conn.ExecCtx(ctx, query, data.Uuid, data.CategoryCode, data.CategoryDesc, data.Sort)
 	return ret, err
 }
 
-func (m *customTSystemDictKeyModel) createBuilder(build sqlbuilder.InsertBuilder) *sqlbuilder.InsertBuilder {
-	return build.InsertInto(m.table)
-}
-
-func (m *customTSystemDictKeyModel) BulkInsert(ctx context.Context, datas []*TSystemDictKey) error {
-	builder := sqlbuilder.NewInsertBuilder()
-	builder.Cols(tSystemDictKeyRowsExpectAutoSet)
-	for _, data := range datas {
-		builder.Values(data.Uuid, data.CategoryCode, data.CategoryDesc, data.Sort)
-	}
-	sql, args := m.createBuilder(*builder).Build()
-	sql = strings.ReplaceAll(sql, "`", "")
-	_, err := m.conn.ExecCtx(ctx, sql, args...)
-	return err
-}
-
 func (m *defaultTSystemDictKeyModel) Update(ctx context.Context, newData *TSystemDictKey) error {
-	sb := sqlbuilder.Update(m.table)
-	split := strings.Split(tSystemDictKeyRowsExpectAutoSet, ",")
-	var assigns []string
-	for _, s := range split {
-		assigns = append(assigns, sb.Assign(s, nil))
-	}
-	sb.Set(assigns...)
-	sb.Where(sb.EQ("`id`", nil))
-	sql, _ := sb.Build()
-	_, err := m.conn.ExecCtx(ctx, sql, newData.Uuid, newData.CategoryCode, newData.CategoryDesc, newData.Sort, newData.Id)
+	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, tSystemDictKeyRowsWithPlaceHolder)
+	_, err := m.conn.ExecCtx(ctx, query, newData.Uuid, newData.CategoryCode, newData.CategoryDesc, newData.Sort, newData.Id)
 	return err
 }
 
 func (m *defaultTSystemDictKeyModel) tableName() string {
 	return m.table
-}
-
-func (m *customTSystemDictKeyModel) Find(ctx context.Context, conds ...condition.Condition) ([]*TSystemDictKey, error) {
-	sb := sqlbuilder.Select(tSystemDictKeyFieldNames...).From(m.table)
-	condition.Apply(sb, conds...)
-	sql, args := sb.Build()
-
-	var resp []*TSystemDictKey
-	err := m.conn.QueryRowsCtx(ctx, &resp, sql, args...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (m *customTSystemDictKeyModel) Page(ctx context.Context, conds ...condition.Condition) ([]*TSystemDictKey, int64, error) {
-	sb := sqlbuilder.Select(tSystemDictKeyFieldNames...).From(m.table)
-	countsb := sqlbuilder.Select("count(*)").From(m.table)
-
-	condition.Apply(sb, conds...)
-	condition.Apply(countsb, conds...)
-
-	var resp []*TSystemDictKey
-
-	sql, args := sb.Build()
-	err := m.conn.QueryRowsCtx(ctx, &resp, sql, args...)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	// get total
-	var total int64
-	sql, args = countsb.Build()
-	err = m.conn.QueryRowCtx(ctx, &total, sql, args...)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	return resp, total, nil
 }

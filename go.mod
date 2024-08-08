@@ -3,7 +3,7 @@ module github.com/jzero-io/sqlbuilder-zero
 go 1.22.3
 
 require (
-	github.com/huandu/go-sqlbuilder v1.28.0
+	github.com/jzero-io/jzero-contrib v0.3.0
 	github.com/zeromicro/go-zero v1.7.0
 )
 
@@ -17,11 +17,10 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.20.0 // indirect
+	github.com/huandu/go-sqlbuilder v1.28.0 // indirect
 	github.com/huandu/xstrings v1.4.0 // indirect
-	github.com/jzero-io/jzero-contrib v0.3.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/matttproud/golang_protobuf_extensions/v2 v2.0.0 // indirect
 	github.com/openzipkin/zipkin-go v0.4.3 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/prometheus/client_golang v1.19.1 // indirect
@@ -29,6 +28,7 @@ require (
 	github.com/prometheus/common v0.48.0 // indirect
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
+	github.com/spf13/cast v1.3.1 // indirect
 	go.opentelemetry.io/otel v1.24.0 // indirect
 	go.opentelemetry.io/otel/exporters/jaeger v1.17.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.24.0 // indirect
