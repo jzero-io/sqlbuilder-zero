@@ -27,6 +27,13 @@ mkdir -p .template/go-zero
         ├── field.tpl
 ```
 
+## 特性
+
+* 将原生 sql 全部替换为 sqlbuilder 进行构建
+* 新增方法: BulkInsert: 批量插入数据
+* 新增方法: Find: 基于不同条件查询数据
+* 新增方法: Page: 基于不同条件获取分页数据
+
 ## gen
 
 ```shell
