@@ -11,6 +11,7 @@ import (
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"github.com/zeromicro/go-zero/core/stringx"
 	"github.com/huandu/go-sqlbuilder"
+	"github.com/jzero-io/jzero-contrib/condition"
 
 	{{.third}}
 )

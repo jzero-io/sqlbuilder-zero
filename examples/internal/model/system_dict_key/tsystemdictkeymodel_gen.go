@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/huandu/go-sqlbuilder"
+	"github.com/jzero-io/jzero-contrib/condition"
 	"github.com/zeromicro/go-zero/core/stores/builder"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"github.com/zeromicro/go-zero/core/stringx"
@@ -121,6 +122,22 @@ func (m *defaultTSystemDictKeyModel) Insert(ctx context.Context, data *TSystemDi
 	return ret, err
 }
 
+func (m *customTSystemDictKeyModel) createBuilder(build sqlbuilder.InsertBuilder) *sqlbuilder.InsertBuilder {
+	return build.InsertInto(m.table)
+}
+
+func (m *customTSystemDictKeyModel) BulkInsert(ctx context.Context, datas []*TSystemDictKey) error {
+	builder := sqlbuilder.NewInsertBuilder()
+	builder.Cols(tSystemDictKeyRowsExpectAutoSet)
+	for _, data := range datas {
+		builder.Values(data.Uuid, data.CategoryCode, data.CategoryDesc, data.Sort)
+	}
+	sql, args := m.createBuilder(*builder).Build()
+	sql = strings.ReplaceAll(sql, "`", "")
+	_, err := m.conn.ExecCtx(ctx, sql, args...)
+	return err
+}
+
 func (m *defaultTSystemDictKeyModel) Update(ctx context.Context, newData *TSystemDictKey) error {
 	sb := sqlbuilder.Update(m.table)
 	split := strings.Split(tSystemDictKeyRowsExpectAutoSet, ",")
@@ -137,4 +154,43 @@ func (m *defaultTSystemDictKeyModel) Update(ctx context.Context, newData *TSyste
 
 func (m *defaultTSystemDictKeyModel) tableName() string {
 	return m.table
+}
+
+func (m *customTSystemDictKeyModel) Find(ctx context.Context, conds ...condition.Condition) ([]*TSystemDictKey, error) {
+	sb := sqlbuilder.Select(tSystemDictKeyFieldNames...).From(m.table)
+	condition.Apply(sb, conds...)
+	sql, args := sb.Build()
+
+	var resp []*TSystemDictKey
+	err := m.conn.QueryRowsCtx(ctx, &resp, sql, args...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (m *customTSystemDictKeyModel) Page(ctx context.Context, conds ...condition.Condition) ([]*TSystemDictKey, int64, error) {
+	sb := sqlbuilder.Select(tSystemDictKeyFieldNames...).From(m.table)
+	countsb := sqlbuilder.Select("count(*)").From(m.table)
+
+	condition.Apply(sb, conds...)
+	condition.Apply(countsb, conds...)
+
+	var resp []*TSystemDictKey
+
+	sql, args := sb.Build()
+	err := m.conn.QueryRowsCtx(ctx, &resp, sql, args...)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// get total
+	var total int64
+	sql, args = countsb.Build()
+	err = m.conn.QueryRowCtx(ctx, &total, sql, args...)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return resp, total, nil
 }

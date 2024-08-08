@@ -1,12 +1,20 @@
 package {{.pkg}}
 {{if .withCache}}
 import (
+    "context"
+
 	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
+    "github.com/jzero-io/jzero-contrib/condition"
 )
 {{else}}
 
-import "github.com/zeromicro/go-zero/core/stores/sqlx"
+import (
+    "context"
+
+    "github.com/zeromicro/go-zero/core/stores/sqlx"
+    "github.com/jzero-io/jzero-contrib/condition"
+)
 {{end}}
 var _ {{.upperStartCamelObject}}Model = (*custom{{.upperStartCamelObject}}Model)(nil)
 
@@ -15,7 +23,11 @@ type (
 	// and implement the added methods in custom{{.upperStartCamelObject}}Model.
 	{{.upperStartCamelObject}}Model interface {
 		{{.lowerStartCamelObject}}Model
-		{{if not .withCache}}withSession(session sqlx.Session) {{.upperStartCamelObject}}Model{{end}}
+		{{if not .withCache}}WithSession(session sqlx.Session) {{.upperStartCamelObject}}Model{{end}}
+
+	    BulkInsert(ctx context.Context, datas []*{{.upperStartCamelObject}}) error
+        Find(ctx context.Context, conds ...condition.Condition) ([]*{{.upperStartCamelObject}}, error)
+        Page(ctx context.Context, conds ...condition.Condition) ([]*{{.upperStartCamelObject}}, int64 ,error)
 	}
 
 	custom{{.upperStartCamelObject}}Model struct {
@@ -31,7 +43,7 @@ func New{{.upperStartCamelObject}}Model(conn sqlx.SqlConn{{if .withCache}}, c ca
 }
 
 {{if not .withCache}}
-func (m *custom{{.upperStartCamelObject}}Model) withSession(session sqlx.Session) {{.upperStartCamelObject}}Model {
+func (m *custom{{.upperStartCamelObject}}Model) WithSession(session sqlx.Session) {{.upperStartCamelObject}}Model {
     return New{{.upperStartCamelObject}}Model(sqlx.NewSqlConnFromSession(session))
 }
 {{end}}

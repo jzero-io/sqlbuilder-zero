@@ -1,6 +1,11 @@
 package system_dict_key
 
-import "github.com/zeromicro/go-zero/core/stores/sqlx"
+import (
+	"context"
+
+	"github.com/jzero-io/jzero-contrib/condition"
+	"github.com/zeromicro/go-zero/core/stores/sqlx"
+)
 
 var _ TSystemDictKeyModel = (*customTSystemDictKeyModel)(nil)
 
@@ -9,7 +14,11 @@ type (
 	// and implement the added methods in customTSystemDictKeyModel.
 	TSystemDictKeyModel interface {
 		tSystemDictKeyModel
-		withSession(session sqlx.Session) TSystemDictKeyModel
+		WithSession(session sqlx.Session) TSystemDictKeyModel
+
+		BulkInsert(ctx context.Context, datas []*TSystemDictKey) error
+		Find(ctx context.Context, conds ...condition.Condition) ([]*TSystemDictKey, error)
+		Page(ctx context.Context, conds ...condition.Condition) ([]*TSystemDictKey, int64, error)
 	}
 
 	customTSystemDictKeyModel struct {
@@ -24,6 +33,6 @@ func NewTSystemDictKeyModel(conn sqlx.SqlConn) TSystemDictKeyModel {
 	}
 }
 
-func (m *customTSystemDictKeyModel) withSession(session sqlx.Session) TSystemDictKeyModel {
+func (m *customTSystemDictKeyModel) WithSession(session sqlx.Session) TSystemDictKeyModel {
 	return NewTSystemDictKeyModel(sqlx.NewSqlConnFromSession(session))
 }
