@@ -132,22 +132,6 @@ func (m *defaultTSystemDictKeyModel) Insert(ctx context.Context, data *TSystemDi
 	return ret, err
 }
 
-func (m *customTSystemDictKeyModel) createBuilder(build sqlbuilder.InsertBuilder) *sqlbuilder.InsertBuilder {
-	return build.InsertInto(m.table)
-}
-
-func (m *customTSystemDictKeyModel) BulkInsert(ctx context.Context, datas []*TSystemDictKey) error {
-	builder := sqlbuilder.NewInsertBuilder()
-	builder.Cols(tSystemDictKeyRowsExpectAutoSet)
-	for _, data := range datas {
-		builder.Values(data.Uuid, data.CategoryCode, data.CategoryDesc, data.Sort)
-	}
-	sql, args := m.createBuilder(*builder).Build()
-	sql = strings.ReplaceAll(sql, "`", "")
-	_, err := m.conn.ExecCtx(ctx, sql, args...)
-	return err
-}
-
 func (m *defaultTSystemDictKeyModel) Update(ctx context.Context, newData *TSystemDictKey) error {
 	sb := sqlbuilder.Update(m.table)
 	split := strings.Split(tSystemDictKeyRowsExpectAutoSet, ",")
@@ -164,6 +148,17 @@ func (m *defaultTSystemDictKeyModel) Update(ctx context.Context, newData *TSyste
 
 func (m *defaultTSystemDictKeyModel) tableName() string {
 	return m.table
+}
+
+func (m *customTSystemDictKeyModel) BulkInsert(ctx context.Context, datas []*TSystemDictKey) error {
+	sb := sqlbuilder.InsertInto(m.table)
+	sb.Cols(tSystemDictKeyRowsExpectAutoSet)
+	for _, data := range datas {
+		sb.Values(data.Uuid, data.CategoryCode, data.CategoryDesc, data.Sort)
+	}
+	sql, args := sb.Build()
+	_, err := m.conn.ExecCtx(ctx, sql, args...)
+	return err
 }
 
 func (m *customTSystemDictKeyModel) FindByCondition(ctx context.Context, conds ...condition.Condition) ([]*TSystemDictKey, error) {
