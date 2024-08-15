@@ -1,9 +1,6 @@
 package system_dict_key
 
 import (
-	"context"
-
-	"github.com/jzero-io/jzero-contrib/condition"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
 
@@ -15,10 +12,6 @@ type (
 	TSystemDictKeyModel interface {
 		tSystemDictKeyModel
 		WithSession(session sqlx.Session) TSystemDictKeyModel
-
-		BulkInsert(ctx context.Context, datas []*TSystemDictKey) error
-		Find(ctx context.Context, conds ...condition.Condition) ([]*TSystemDictKey, error)
-		Page(ctx context.Context, conds ...condition.Condition) ([]*TSystemDictKey, int64, error)
 	}
 
 	customTSystemDictKeyModel struct {
