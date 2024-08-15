@@ -1,5 +1,7 @@
 # sqlbuilder-zero
 
+**自动同步至 https://github.com/jzero-io/jzero/tree/main/.template/go-zero/model**
+
 go-zero sqlbuilder model template.
 
 把 goctl 默认的 model 模板替换成 github.com/huandu/go-sqlbuilder 方式, 目的: 

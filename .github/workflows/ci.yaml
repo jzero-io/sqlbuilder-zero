@@ -21,8 +21,6 @@ jobs:
 
       - name: Install Jzero and Grum
         run: |
-          go install github.com/jzero-io/jzero@main
-          jzero check
           go install github.com/jaronnie/grum@latest
 
       - name: Test Usage and upload
