@@ -85,8 +85,10 @@ func (m *defaultTSystemDictKeyModel) FindOne(ctx context.Context, id int64) (*TS
 func (m *defaultTSystemDictKeyModel) FindOneByCategoryCode(ctx context.Context, categoryCode string) (*TSystemDictKey, error) {
 	var resp TSystemDictKey
 	sb := sqlbuilder.Select(tSystemDictKeyRows).From(m.table)
-	sb.Where(sb.EQ("`category_code` = ?", categoryCode))
+	// patch
+	sb.Where(sb.EQ(strings.Split(strings.ReplaceAll("`category_code` = ?", " ", ""), "=")[0], categoryCode))
 	sb.Limit(1)
+
 	sql, args := sb.Build()
 	err := m.conn.QueryRowCtx(ctx, &resp, sql, args...)
 
@@ -103,8 +105,10 @@ func (m *defaultTSystemDictKeyModel) FindOneByCategoryCode(ctx context.Context, 
 func (m *defaultTSystemDictKeyModel) FindOneByUuid(ctx context.Context, uuid string) (*TSystemDictKey, error) {
 	var resp TSystemDictKey
 	sb := sqlbuilder.Select(tSystemDictKeyRows).From(m.table)
-	sb.Where(sb.EQ("`uuid` = ?", uuid))
+	// patch
+	sb.Where(sb.EQ(strings.Split(strings.ReplaceAll("`uuid` = ?", " ", ""), "=")[0], uuid))
 	sb.Limit(1)
+
 	sql, args := sb.Build()
 	err := m.conn.QueryRowCtx(ctx, &resp, sql, args...)
 
