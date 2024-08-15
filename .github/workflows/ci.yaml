@@ -28,6 +28,8 @@ jobs:
           GITHUB_TOKEN=${{ secrets.ACCESS_TOKEN }} grum clone https://github.com/jzero-io/jzero
           cp -r .template/go-zero/model ./jzero/.template/go-zero
           cd jzero
+          git config user.name "dependabot[bot]"
+          git config user.email "49699333+dependabot[bot]@users.noreply.github.com"
           git add .
           git diff-index --quiet HEAD || git commit -m "chore(template): update .template go-zero/model"
           git push -f
