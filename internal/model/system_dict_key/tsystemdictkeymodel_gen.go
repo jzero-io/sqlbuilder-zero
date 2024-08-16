@@ -36,6 +36,7 @@ type (
 		FindOneByCondition(ctx context.Context, conds ...condition.Condition) (*TSystemDictKey, error)
 		PageByCondition(ctx context.Context, conds ...condition.Condition) ([]*TSystemDictKey, int64, error)
 		UpdateFieldsByCondition(ctx context.Context, field map[string]any, conds ...condition.Condition) error
+		BulkDelete(ctx context.Context, conds ...condition.Condition) error
 	}
 
 	defaultTSystemDictKeyModel struct {
@@ -234,4 +235,15 @@ func (m *customTSystemDictKeyModel) UpdateFieldsByCondition(ctx context.Context,
 		return err
 	}
 	return nil
+}
+
+func (m *customTSystemDictKeyModel) BulkDelete(ctx context.Context, conds ...condition.Condition) error {
+	if len(conds) == 0 {
+		return nil
+	}
+	sb := sqlbuilder.DeleteFrom(m.table)
+	condition.ApplyDelete(sb, conds...)
+	sql, args := sb.Build()
+	_, err := m.conn.ExecCtx(ctx, sql, args...)
+	return err
 }
