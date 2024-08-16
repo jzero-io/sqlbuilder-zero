@@ -37,6 +37,7 @@ mkdir -p .template/go-zero
 * 新增方法: FindByCondition: 基于不同条件查询数据
 * 新增方法: FindOneByCondition: 基于不同条件查询数据, limit 1
 * 新增方法: PageByCondition: 基于不同条件获取分页数据
+* 新增方法: UpdateFieldsByCondition: 基于不同条件更新某几个 fields
 
 ## gen
 

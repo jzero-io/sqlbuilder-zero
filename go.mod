@@ -3,7 +3,7 @@ module github.com/jzero-io/sqlbuilder-zero
 go 1.22.3
 
 require (
-	github.com/jzero-io/jzero-contrib v0.3.0
+	github.com/jzero-io/jzero-contrib v0.5.0
 	github.com/zeromicro/go-zero v1.7.0
 )
 
