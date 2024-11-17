@@ -38,6 +38,8 @@ github.com/jzero-io/jzero-contrib v0.3.0 h1:MsZ41yHGsIawchosJGBI/0ffCwuTfhWbpWSK
 github.com/jzero-io/jzero-contrib v0.3.0/go.mod h1:jjMBhPGTTdY7iNx0el4e2a0BQOOR0dTM2sYpG5Fb8eU=
 github.com/jzero-io/jzero-contrib v0.5.0 h1:4IYOnAQu+eh1QLnUHYp1kUashJhZ7DcMxoyOGqxf0Nw=
 github.com/jzero-io/jzero-contrib v0.5.0/go.mod h1:gnb8126zic3cq2Q6U+casZA/PBnW/kNoxYtk+6Xfz2U=
+github.com/jzero-io/jzero-contrib v0.8.1-0.20241117075125-be79d9453cc1 h1:A+rqRBvzJREPCAwrs1RnpBxqrS2WAfpKz720KwgRqPs=
+github.com/jzero-io/jzero-contrib v0.8.1-0.20241117075125-be79d9453cc1/go.mod h1:yRSM1PfjafyGimCklIhokB9dC5bX0UMbddv4cqoFSUM=
 github.com/kr/pretty v0.3.1 h1:flRD4NNwYAUpkphVc1HcthR4KEIFJ65n8Mw5qdRn3LE=
 github.com/kr/pretty v0.3.1/go.mod h1:hoEshYVHaxMs3cyo3Yncou5ZscifuDolrwPKZanG3xk=
 github.com/kr/text v0.2.0 h1:5Nx0Ya0ZqY2ygV366QzturHI13Jq95ApcVaJBhpS+AY=
