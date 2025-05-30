@@ -1,6 +1,8 @@
 # sqlbuilder-zero
 
-**自动同步至 https://github.com/jzero-io/jzero/tree/main/.template/go-zero/model**
+**已废弃⚠️**
+
+see: **https://github.com/jzero-io/jzero/tree/main/.template/go-zero/model**
 
 go-zero sqlbuilder model template.
 
